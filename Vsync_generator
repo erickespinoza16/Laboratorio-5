@@ -1,0 +1,24 @@
+
+module vsync_generator(
+    input logic clk,
+    input logic [9:0] count_v,
+    input logic reset,
+//input logic en,
+    output logic vsync
+    );
+    parameter VD = 10'd480;
+    parameter VF = 10'd10;
+    parameter VR = 10'd2;
+    logic vsync_aux, vsync_aux2;
+    assign vsync = vsync_aux;
+     always @(posedge clk  or posedge reset)
+              if (reset)begin
+                  vsync_aux <=0;
+              end
+              else begin
+              //if(en==1)begin
+                  vsync_aux <=vsync_aux2;
+              //end
+               end
+               assign vsync_aux2 = ((count_v>=(VD+VF)) &&(count_v<=(VD+VF+VR-1)));
+endmodule
