@@ -1,0 +1,314 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 06.05.2019 18:16:00
+// Design Name: 
+// Module Name: StateMachine
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module StateMachine(
+    input logic clk,
+    input logic clk_count,    
+    input logic reset,
+//    input logic x,
+    output logic [3:0] est,
+    output logic [11:0] Cuad1,
+    output logic [11:0] Cuad2,
+    output logic [11:0] Cuad3,
+    output logic [11:0] Cuad4,
+    output logic [1:0]indice,
+    output logic [11:0] rgb
+    );
+     reg [31:0] y1;
+     reg [31:0] y2;
+     reg [3:0] salCount1;
+     wire [3:0] salCount2;
+     wire [3:0] salCount3;
+     wire [3:0] salCount4;
+     logic [3:0] cnt16;
+     logic [11:0] resultCount1,resultCount1N;
+     logic [11:0] resultCount2;
+     logic [11:0] resultCount3;
+     logic [11:0] resultCount4;
+     //logic [1:0] state;
+     reg enContador1;
+     reg enContador2;
+     reg enContador3;
+     reg enContador4;
+     reg [11:0]pwmColor;
+     parameter estado1 = 4'b0001;
+     parameter estado2 = 4'b0010;
+     parameter estado3 = 4'b0100;
+     parameter estado4 = 4'b1000;
+     parameter colorNegro = 12'h000;
+     assign rgb = pwmColor;
+     typedef enum logic [1:0] {S0, S1, S2, S3} statetype;
+     statetype [1:0] state, nextstate;
+//      parameter S0= 2'b00,  // Pintar cuadro 1
+//               S1= 2'b01,  // Pintar cuadro 2 
+//               S2= 2'b10,  // Pintar cuadro 3
+//               S3= 2'b11;  // Pintar cuadro 4
+     //Contadores aleatorios
+     Ramdom_Counter Counter1(.clk_in(clk_count),.en(1'b1),.reset(reset),.counter(salCount1));    
+     assign cnt16 = salCount1+1;
+     Ramdon_Table tablet(.clk(clk_count),.addr(cnt16),.RGB(resultCount1));
+     
+//     Ramdom_Counter Counter2(.clk_in(clk_count),.en(enContador2),.reset(reset),.counter(salCount2));    
+//     Ramdon_Table(.addr(salCount2),.RGB(resultCount2));
+//     Ramdom_Counter Counter3(.clk_in(clk_count),.en(enContador3),.reset(reset),.counter(salCount3));    
+//     Ramdon_Table(.addr(salCount3),.RGB(resultCount3));
+//     Ramdom_Counter Counter4(.clk_in(clk_count),.en(enContador4),.reset(reset),.counter(salCount4));    
+//     Ramdon_Table(.addr(salCount4),.RGB(resultCount4));
+//       initial begin
+//       cuadCol1 = 12'h000;
+//       cuadCol2 = 12'h000;
+//       cuadCol3 = 12'h000;
+//       cuadCol4 = 12'h000;
+//     end
+     always @(posedge clk or posedge reset) // Permite actualizar el estado
+//     if(reset) begin
+//             state <= S0; end
+//         else begin
+//     resultCount1N = resultCount1;
+//             case(state)
+//                 S0: 
+//                 if(resultCount1N)
+//                     state <= S1;
+//                 else
+//                     state <= S0; 
+//                 S1: 
+//                 if(resultCount1N)
+//                     state <= S2;
+//                 else
+//                     state <= S1;
+//                 S2:
+//                 if(resultCount1N)
+//                     state <= S3;
+//                 else
+//                     state <= S2;
+//                 S3:
+//                 if(resultCount1N)
+//                     state <= S0;
+//                 else
+//                     state <= S3;
+//             endcase
+//         end
+ //    end
+     
+//     always @(state, resultCount1N) begin
+//         case (state)
+//             S0: begin 
+//                 Cuad1 <= resultCount1N;
+//                 //ind<=2'b00;end
+//                 end
+//             S1: begin 
+//                 Cuad2 <= resultCount1N;
+//                // ind<=2'b01;end
+//                end
+//             S2: begin 
+//                 Cuad3 <= resultCount1N;
+//                 //ind<=2'b10;end
+//                 end
+//             S3: begin 
+//                 Cuad4 <= resultCount1N;
+//                 //ind<=2'b11; end
+//                 end
+//         endcase 
+//     end
+     
+     
+     if (reset)
+      state <= S0;
+     else
+      state <= nextstate;
+      always @(est,state,Cuad1, Cuad2, Cuad3, Cuad4,resultCount1, resultCount2, resultCount3, resultCount4,resultCount1N,clk,indice) // Permite calcular la salida
+      begin
+      resultCount1N = resultCount1;
+       case(state)
+       S0:begin
+       //est <= 4'b0001;
+       pwmColor <=Cuad4;
+       est <= estado1;
+       indice <= 2'b00;
+//       cuadCol1 <= cuadCol1;
+//       cuadCol2 <= cuadCol2;
+//       cuadCol3 <= cuadCol3;
+//       cuadCol4 = resultCount4;
+//       enContador2=1'b0;
+//       enContador3=1'b0;
+//       enContador4=1'b0;
+//       Cuad1 <= cuadCol1;
+//       Cuad2 <= resultCount2;
+//       Cuad3 <= resultCount3;
+//       Cuad4 <= resultCount4;
+        if(clk)begin
+        Cuad1 <= resultCount1N;
+        Cuad4 <= Cuad4;
+        Cuad2 <= Cuad2;
+        Cuad3 <= Cuad3;
+        end
+        else begin
+        Cuad1 <= Cuad1;
+        //
+        Cuad4 <= Cuad4;
+        Cuad2 <= Cuad2;
+        Cuad3 <= Cuad3;
+    //
+        end
+       //Cuad1 <= resultCount1N;
+//       Cuad2 <= 12'h000;
+//       Cuad3 <= 12'h000;
+//       Cuad4 <= 12'h000;
+       end 
+       S1:begin
+       //est <= 4'b0010;
+       est <= estado2;
+       indice <= 2'b01;
+       pwmColor <=Cuad1;
+//       cuadCol1<=resultCount1;
+//       cuadCol2 <= cuadCol2;
+//       cuadCol3 <= cuadCol3;
+//       cuadCol4 <= cuadCol4;
+//       enContador2=1'b1;
+//       enContador3=1'b0;
+//       enContador4=1'b0;
+//       Cuad1 <= resultCount1;
+//       Cuad2 <= cuadCol2;
+//       Cuad3 <= resultCount3;
+//       Cuad4 <= resultCount4;
+//        Cuad1 <= Cuad1;
+//        Cuad2 <= 12'hFF0;
+//        Cuad3 <= 12'h000;
+//        Cuad4 <= 12'h000;
+       //Cuad2 <= resultCount1N;
+       if(clk)begin
+       Cuad2 <= resultCount1N;
+       Cuad4 <= Cuad4;
+       Cuad3 <= Cuad3;
+       Cuad1 <= Cuad1;
+       end
+       else begin
+       Cuad2 <= Cuad2;
+        //
+       Cuad4 <= Cuad4;
+       Cuad3 <= Cuad3;
+       Cuad1 <= Cuad1;
+   //
+       end
+       end 
+       S2:begin
+       //est <= 4'b0100;
+       est <= estado3;
+       indice <= 2'b10;
+       pwmColor <=Cuad2;
+//       cuadCol1 <= cuadCol1;
+//       cuadCol2 <= resultCount2;
+//       cuadCol3 <= cuadCol3;
+//       cuadCol4 <= cuadCol4;
+//       enContador2=1'b0;
+//       enContador3=1'b1;
+//       enContador4=1'b0;
+//       Cuad1 <= resultCount1;
+//       Cuad2 <= resultCount2;
+//       Cuad3 <= cuadCol3;
+//       Cuad4 <= resultCount4;
+       //Cuad3 <= resultCount1N;
+//        Cuad1 <= Cuad1;
+//        Cuad2 <= 12'h000;
+//        Cuad3 <= 12'hFF0;
+//        Cuad4 <= 12'h000;
+        if(clk)begin
+        Cuad3 <= resultCount1N;
+        Cuad4 <= Cuad4;
+        Cuad2 <= Cuad2;
+        Cuad1 <= Cuad1;
+        end
+        else begin
+        Cuad3 <= Cuad3;
+        //
+        Cuad4 <= Cuad4;
+        Cuad2 <= Cuad2;
+        Cuad1 <= Cuad1;
+    //
+        end
+       end 
+       S3:begin
+       //est <= 4'b1000;
+       est <= estado4;
+       indice <= 2'b11;
+       pwmColor <=Cuad3;
+//       enContador1=1'b0;
+//       cuadCol1 <= cuadCol1;
+//       cuadCol2 <= cuadCol2;
+//       cuadCol3 <= resultCount3;
+//       cuadCol4 <= cuadCol4;
+//       enContador2=1'b0;
+//       enContador3=1'b0;
+//       enContador4=1'b1;
+//       Cuad4 <= resultCount1N;
+//       Cuad1 <= resultCount1;
+//       Cuad2 <= resultCount2;
+//       Cuad3 <= resultCount3;
+//       Cuad4 <= cuadCol4;
+//        Cuad1 <= Cuad1;
+//        Cuad2 <= 12'h000;
+//        Cuad3 <= 12'h000;
+//        Cuad4 <= 12'hFF0;
+        if(clk)begin
+            Cuad4 <= resultCount1N;
+            Cuad3 <= Cuad3;
+            Cuad2 <= Cuad2;
+            Cuad1 <= Cuad1;
+        end
+        else begin
+        //Esto lo estoy metiendo nuevo
+            Cuad3 <= Cuad3;
+            Cuad2 <= Cuad2;
+            Cuad1 <= Cuad1;
+        //
+            Cuad4 <= Cuad4;
+        end
+       end 
+       default: begin
+       Cuad1 <= colorNegro;
+       Cuad2 <= colorNegro;
+       Cuad3 <= colorNegro;
+       Cuad4 <= colorNegro;
+       est <= estado1;
+       indice <= 2'b00;
+       pwmColor <=colorNegro;
+       end
+       endcase
+      end
+
+    always @(state) // Permite calcular el siguiente estado
+    begin
+     //nextstate = S0;
+     //resultCount1N = resultCount1;
+     case(state)
+     S0: 
+     nextstate = S1;
+     S1: 
+     nextstate = S2;
+     S2: 
+     nextstate = S3;
+     S3: 
+     nextstate = S0;
+     default: nextstate = S0;
+     endcase
+    end
+endmodule
