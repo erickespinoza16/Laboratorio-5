@@ -1,0 +1,24 @@
+
+module V_Counter(
+    input logic [9:0] hcount,
+    input logic clk,
+    input logic reset,
+    input logic en,
+    output [9:0] Count_V
+    );
+     reg [9:0] vcount=0;
+       //parameter vsc = 10'd4; // Sincronizador Vertical
+       parameter vlines = 10'd500; 
+           always @((negedge clk && hcount==10'd800) or posedge reset)
+           if (reset)begin
+               vcount <= 0;
+           end
+           else if(en==1)begin
+               if(vcount==vlines)
+                    vcount <= 0;
+               else
+                    vcount <= vcount+1;
+            end
+               //assign Count_V = (vcount < vsc)? 0 : 1; //
+               assign Count_V = vcount;     
+endmodule
