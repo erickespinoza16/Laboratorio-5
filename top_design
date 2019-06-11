@@ -1,0 +1,83 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 02.05.2019 10:05:25
+// Design Name: 
+// Module Name: Top_design
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module Top_design(
+         input logic clk,
+//input btnC,
+         input logic btnL,//Se esta agregando este (StateMachine5)
+//input btnR,//Se esta agregando este (StateMachine5)
+         input logic [1:0]sw,
+         output logic hsync,
+         output logic vsync,
+         output logic [3:0] VGA_R,//4-bit VGA red output
+         output logic [3:0] VGA_G,//4-bit VGA red output
+         output logic [3:0] VGA_B //4-bit VGA red output
+//output ca,
+//output cb,
+//output cc,
+//output cd,
+//output ce,
+//output cf,
+//output cg,
+//output [7:0]an,
+//output [14:0]led
+    );
+    //Aalmbres
+    wire clkdivider;
+    wire clkdivider2;
+    wire button1;
+    wire video_on;
+    logic [9:0] x;  // current pixel x position: 10-bit value: 0-1023
+    logic [9:0] y;  // current pixel y position:  9-bit value: 0-511
+    //Registros
+    reg [11:0] rgb_reg;
+    wire [11:0] rgb_next;
+    Divisor2 Divisor(.clk_in(clk),.en(1'b1),.reset(button1),.clk_out(clkdivider));
+    Divisor50 Divisor2(.clk_in(clk),.en(1'b1),.reset(button1),.clk_out(clkdivider2));
+    //Clock_Divider Divisor(.clk_in(clk),.en(1'b1),.reset(button1),.clk_out(clkdivider));
+    Antirebote antiL(.clk(clk),.btn_in(btnL),.btn_out(button1));
+    vga_sync(.clk(clkdivider),.reset(button1),.hsync(hsync),.vsync(vsync),.video_on(video_on),.pixel_x(x),.pixel_y(y));
+//        always @(posedge clkdivider , posedge button1)
+//        if (button1)
+//        rgb_reg <= 0;
+//        else
+//        rgb_reg <= sw;
+        // output
+//        wire sq_a, sq_b, sq_c, sq_d;
+//        assign sq_a = ((x > 120) & (y >  40) & (x < 280) & (y < 200)) ? 1 : 0;
+//        assign sq_b = ((x > 200) & (y > 120) & (x < 360) & (y < 280)) ? 1 : 0;
+//        assign sq_c = ((x > 280) & (y > 200) & (x < 440) & (y < 360)) ? 1 : 0;
+//        assign sq_d = ((x > 360) & (y > 280) & (x < 520) & (y < 440)) ? 1 : 0;
+//        assign VGA_R[3] = sq_b;         // square b is red
+//        assign VGA_G[3] = sq_a | sq_d;  // squares a and d are green
+//        assign VGA_B[3] = sq_c;         // square c is blue
+    //Cuadrante1 cuadprueba(.video_on(video_on),.x(x),.y(y),.RGB({VGA_R,VGA_G,VGA_B}));//Primera version
+    //Cuadrante1 cuadprueba(.video_on(video_on),.x(x),.y(y),.RGB(rgb_next));
+    //pong_graph_st pong(.video_on(video_on),.pix_x(x),.pix_y(y),.graph_rgb(rgb_next));
+    pong_graph_animate animado(.video_on(video_on),.clk(clkdivider2),.reset(button1),.pix_x(x),.pix_y(y),.btn(sw[1:0]),.graph_rgb(rgb_next) );
+    always @(posedge clkdivider2)
+    if (clkdivider)
+    rgb_reg <= rgb_next ;
+    // output
+    assign {VGA_R,VGA_G,VGA_B} = rgb_reg; 
+
+endmodule
