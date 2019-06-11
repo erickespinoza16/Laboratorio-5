@@ -1,0 +1,50 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 05.05.2019 17:02:28
+// Design Name: 
+// Module Name: SRAM
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module SRAM#(parameter ADDR_WIDTH=8, DATA_WIDTH=8, DEPTH=256, MEMFILE="")
+(
+    input logic clk,
+    input logic input_addr,
+    input logic input_data,
+    input logic input_w,
+    output logic output_data
+    );
+    reg [DATA_WIDTH-1:0] memory_array [0:DEPTH-1]; 
+
+    initial begin
+        if (MEMFILE > 0)
+        begin
+            $display("Loading memory init file '" + MEMFILE + "' into array.");
+            $readmemh(MEMFILE, memory_array);
+        end
+    end
+
+    always @ (posedge clk)
+    begin
+        if(input_w) begin
+            memory_array[input_addr] <= input_data;
+        end
+        else begin
+            output_data <= memory_array[input_addr];
+        end     
+    end
+endmodule
