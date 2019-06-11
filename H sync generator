@@ -1,0 +1,24 @@
+module hsync_generator(
+    input logic clk,
+    input logic [9:0] count_h,
+    input logic reset,
+    //input logic en,
+    output logic hsync
+    );
+           parameter HDHB = 10'd656;
+           parameter HD = 10'd640;
+           parameter HB = 10'd16;
+           parameter HR = 10'd96;
+           logic hsync_aux, hsync_aux2;
+           assign hsync = hsync_aux;
+           always @(posedge clk  or posedge reset)
+           if (reset)begin
+               hsync_aux <=0;
+           end
+           else begin
+           //if(en==1)begin
+               hsync_aux <=hsync_aux2;
+           //end
+            end
+            assign hsync_aux2 = ((count_h>=HDHB) &&(count_h<=(HD+HB+HR-1)));
+endmodule
