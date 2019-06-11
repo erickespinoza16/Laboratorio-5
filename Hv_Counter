@@ -1,0 +1,53 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 01.05.2019 17:19:57
+// Design Name: 
+// Module Name: HV_Counter
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module HV_Counter(
+    input logic clk,
+    input logic reset,
+    input logic en,
+    output [9:0] Count_V,
+    output [9:0] Count_H
+    );
+     reg [9:0] hcount=0;
+     reg [9:0] vcount=0;
+    parameter hpixeles = 10'd800;
+    parameter vlines = 10'd500;
+        always @(posedge clk or posedge reset)
+        if (reset)begin
+            hcount <= 0;
+            vcount <= 0;
+        end
+        else begin
+        if(en==1)begin
+            if(hcount==hpixeles)begin
+                 hcount <= 0;
+                 vcount <= vcount+1;
+                 end
+             else
+                 hcount <= hcount+1;
+             if(vcount==vlines)
+                 vcount <= 0;
+         end
+         end
+            assign Count_H = hcount;
+            assign Count_V = vcount;
+endmodule
