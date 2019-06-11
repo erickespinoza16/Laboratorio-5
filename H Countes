@@ -1,0 +1,22 @@
+module H_Counter(
+    input logic clk,
+    input logic reset,
+    input logic en,
+    output logic [9:0] Count_H
+    );
+    reg [9:0] hcount=0;
+    //parameter hsc = 10'd64; // --Sincronizador Horizontal
+    parameter hpixeles = 10'd800; 
+        always @(posedge clk or posedge reset)
+        if (reset)begin
+            hcount <= 0;
+        end
+        else if(en==1)begin
+            if(hcount==hpixeles)
+                 hcount <= 0;
+            else
+                 hcount <= hcount+1;
+         end
+            //assign Count_H = (hcount < hsc)? 0 : 1; //
+            assign Count_H =hcount;     
+endmodule
