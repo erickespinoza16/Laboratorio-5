@@ -1,0 +1,110 @@
+module Cuadrante1(
+    input logic video_on,
+    input logic [9:0] x,
+    input logic [9:0] y,
+    input logic [11:0] c1, //S esta agregando 07/05/2019
+    input logic [11:0] c2, //S esta agregando 07/05/2019
+    input logic [11:0] c3, //S esta agregando 07/05/2019
+    input logic [11:0] c4, //S esta agregando 07/05/2019
+    output logic [11:0] RGB
+    );
+    wire marcosuperior;
+    wire marcoinferior;
+    wire marcoizquierdo;
+    wire marcoderecho;
+    wire marcocentroh;
+    wire marcocentrov1;
+    wire marcocentrov2;
+    wire cuad1;
+    wire cuad2;
+    wire cuad3;
+    wire cuad4;
+    wire [11:0] ms_out, mi_out, miz_out, mid_out, mch_out, mcv1_out,mcv2_out,cuad1_out,cuad2_out,cuad3_out,cuad4_out;
+    //Marco de pantalla superior
+    assign marcosuperior = ((x >= 0) & (y >=  0) & (x < 640) & (y < 2)) ? 1 : 0;
+        // marco superior output
+    assign ms_out = 12'b000000001111; // blue
+    //Marco de pantalla inferior
+    assign marcoinferior = ((x >= 0) & (y >=  478) & (x < 640) & (y < 480)) ? 1 : 0;
+        // marco inferior output
+    assign mi_out = 12'b000000001111; // blue
+        //Marco de pantalla izquierdo
+    assign marcoizquierdo = ((x >= 0) & (y >=2) & (x < 2) & (y < 478)) ? 1 : 0;
+        // marco izquierdp output
+    assign miz_out = 12'b000000001111; // blue
+        //Marco de pantalla derecho
+    assign marcoderecho = ((x >= 638) & (y >=2) & (x < 640) & (y < 478)) ? 1 : 0;
+        // marco izquierdp output
+    assign mid_out = 12'b000000001111; // blue
+        // Marco centro horizontal
+    assign marcocentroh = ((x >= 2) & (y >=239) & (x < 638) & (y < 241)) ? 1 : 0;
+        // marco centro horizontal output
+    assign mch_out = 12'b000000001111; // blue
+        // marco centro vertical 1
+    assign marcocentrov1 = ((x >= 319) & (y >=2) & (x < 321) & (y < 239)) ? 1 : 0;
+        // marco centro vertical output
+    assign mcv1_out = 12'b000000001111; // blue
+        // marco centro vertical 2
+    assign marcocentrov2 = ((x >= 319) & (y >=241) & (x < 321) & (y < 478)) ? 1 : 0;
+        // marco centro vertical output
+    assign mcv2_out = 12'b000000001111; // blue
+        // Cuadros
+    assign cuad1 = ((x >= 2) & (y >=2) & (x < 319) & (y < 239)) ? 1 : 0;
+    assign cuad1_out = c1; // Color aleatorio  
+    assign cuad2 = ((x >= 321) & (y >=2) & (x < 638) & (y < 239)) ? 1 : 0;
+    assign cuad2_out = c2; // Color aleatorio  
+    assign cuad3 = ((x >= 2) & (y >=241) & (x < 319) & (y < 478)) ? 1 : 0;
+    assign cuad3_out = c3; // Color aleatorio 
+    assign cuad4 = ((x >= 321) & (y >=241) & (x < 638) & (y < 478)) ? 1 : 0;
+    assign cuad4_out = c4; // Color aleatorio 
+//    assign sq_a = ((x > 120) & (y >  40) & (x < 280) & (y < 200)) ? 1 : 0;
+//    assign sq_b = ((x > 200) & (y > 120) & (x < 360) & (y < 280)) ? 1 : 0;
+//    assign sq_c = ((x > 280) & (y > 200) & (x < 440) & (y < 360)) ? 1 : 0;
+//    assign sq_d = ((x > 360) & (y > 280) & (x < 520) & (y < 440)) ? 1 : 0;
+    //assign bar_on = (BAR_X_L<=x) && (x<=BAR-X-R) && (BAR-Y-T<=pix-y) && (pix-y<=BAR-Y-B);
+    always @(*)
+    if (~video_on)begin
+    RGB = 12'b000000000000; // blank
+    end
+    else
+    if (marcosuperior) 
+    RGB = ms_out ;
+    else if (marcoinferior)
+    RGB = mi_out ;
+    else if (marcoizquierdo)
+    RGB = miz_out;
+    else if (marcoderecho)
+    RGB = mid_out;
+    else if (marcocentroh)
+    RGB = mch_out;
+    else if (marcocentrov1)
+    RGB = mcv1_out;
+    else if (marcocentrov2)
+    RGB = mcv2_out;
+    else if (cuad1)
+    RGB = cuad1_out;
+    else if (cuad2)
+    RGB = cuad2_out;
+    else if (cuad3)
+    RGB = cuad3_out;
+    else if (cuad4)
+    RGB = cuad4_out;
+    else
+    RGB = 12'b111111110000; // yellow background 
+//    else begin
+//    if((x>=0)&&(x<640)&&(y>=0)&&(y<2))begin
+//    RGB = 12'b111100000000; // blank
+//    end
+//    if((x>=0)&&(x<640)&&(y>=478)&&(y<480))begin
+//    RGB = 12'b111100000000; // blank
+//    end
+//    if((x>=0)&&(x<2)&&(y>=2)&&(y<478))begin
+//    RGB = 12'b111100000000; // blank
+//    end
+//    if((x>=638)&&(x<640)&&(y>=2)&&(y<478))begin
+//    RGB = 12'b111100000000; // blank
+//    end
+//    else
+//    RGB = 12'b000011110000;
+//    end
+endmodule
