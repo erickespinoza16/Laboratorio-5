@@ -1,0 +1,108 @@
+`timescale 1ns / 1ps
+//////////////////////////////////////////////////////////////////////////////////
+// Company: 
+// Engineer: 
+// 
+// Create Date: 06.05.2019 11:56:02
+// Design Name: 
+// Module Name: Top_desgin_3
+// Project Name: 
+// Target Devices: 
+// Tool Versions: 
+// Description: 
+// 
+// Dependencies: 
+// 
+// Revision:
+// Revision 0.01 - File Created
+// Additional Comments:
+// 
+//////////////////////////////////////////////////////////////////////////////////
+
+
+module Top_desgin_3(
+         input logic clk,
+        input logic btnL,
+        input logic btnR,
+        output [4:0]led,
+        //input logic [1:0]sw,
+        output led0_r,
+        output led0_g,
+        output led0_b,
+        output logic hsync,
+        output logic vsync,
+        output logic [3:0] VGA_R,//4-bit VGA red output
+        output logic [3:0] VGA_G,//4-bit VGA red output
+        output logic [3:0] VGA_B //4-bit VGA red output
+    );
+        //Aalmbres
+    wire clkdivider;
+    wire clkdivider2;
+    wire clkdivider3;
+    wire button1;
+    wire button2;
+    wire video_on;
+    wire [11:0] cuad1;
+    wire [11:0] cuad2;
+    wire [11:0] cuad3;
+    wire [11:0] cuad4;
+    wire [1:0] indice;
+    wire [9:0] posx, posy; // posicion X,Y de la esquina superior izquierda del sprite
+    logic [9:0] x;  // current pixel x position: 10-bit value: 0-1023
+    logic [9:0] y;  // current pixel y position:  9-bit value: 0-511
+    //Registros
+    reg [11:0] rgb_reg;
+    wire [11:0] rgb_next, rgb_next2, wiRGB;
+    Divisor2 Divisor(.clk_in(clk),.en(1'b1),.reset(button1),.clk_out(clkdivider));
+    //Divisor50 Divisor2(.clk_in(clk),.en(1'b1),.reset(button1),.clk_out(clkdivider2));
+    ClockDivider2#(29) Divisor1(.clk_in(clk),.en(1'b1),.reset(1'b0),.clk_out(clkdivider3));
+    Antirebote antiL(.clk(clk),.btn_in(btnL),.btn_out(button1));
+    Antirebote antiR(.clk(clk),.btn_in(btnR),.btn_out(button2));
+    vga_sync sincro(.clk(clkdivider),.reset(button1),.hsync(hsync),.vsync(vsync),.video_on(video_on),.pixel_x(x),.pixel_y(y));
+    Cuadrante1 cuadprueba(.video_on(video_on),.x(x),.y(y),.c1(cuad1),.c2(cuad2),.c3(cuad3),.c4(cuad4),.RGB(rgb_next));
+    StateMachine maquina(.clk(button2),.clk_count(clkdivider),.reset(button1),.est(led[3:0]),.Cuad1(cuad1),.Cuad2(cuad2),.Cuad3(cuad3),.Cuad4(cuad4),.indice(indice[1:0]),.rgb(wiRGB[11:0]));
+    VerificadorFrecuencia verificador(.in(button2),.out(led[4]));
+    sprite el_fantasma(
+      .clk(clkdivider),
+      .hc(x),
+      .vc(y),
+      .posx(posx),
+      .posy(posy),
+      .rgbin(rgb_next),  // si no hay que pintar sprite 
+      .rgbout({VGA_R,VGA_G,VGA_B})  // color de salida, que puede ser
+      );
+  update actualiza_pos_fantasma (
+        .clk(clkdivider),
+        .pulso(button2),
+        .vsync(vsync),  // senal que usaremos para saber cuando toca actualizar la posicion
+        .indice(indice),
+        .posx(posx),    // posicion X de la esquina superior izquierda del sprite
+        .posy(posy)     // posicion Y de la esquina superior izquierda del sprite
+        );
+//            pwm pwm_led0_r (
+//            .clk(clk),
+//            .i_duty({4'b0000,wiRGB[11:8]}),
+//            .o_state(led0_r)
+//        );
+    
+//        pwm pwm_led0_g (
+//            .clk(clk),
+//            .i_duty({4'b0000,wiRGB[7:4]}),
+//            .o_state(led0_g)
+//        );
+    
+//        pwm pwm_led0_b (
+//            .clk(clk),
+//            .i_duty({4'b0000,wiRGB[3:0]}),
+//            .o_state(led0_b)
+//        );
+    logic pwm1, pwm2, pwm3; 
+    pwm_basic #(4) pwmm1 (clk, button1, wiRGB[11:8], led0_r);//R
+    pwm_basic #(4) pwmm2 (clk, button1, wiRGB[7:4], led0_g);//G
+    pwm_basic #(4) pwmm3 (clk, button1, wiRGB[3:0], led0_b);//B
+//    always @(posedge clkdivider2)
+//if (clkdivider)
+//rgb_reg <= rgb_next ;
+//// output
+//assign {VGA_R,VGA_G,VGA_B} = rgb_reg;
+endmodule
