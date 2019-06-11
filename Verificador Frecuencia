@@ -1,0 +1,14 @@
+
+module VerificadorFrecuencia(
+    input logic in,
+    output logic out
+);
+    always_comb
+    begin
+    if(in==1)begin
+    out <= 1'b1;
+    end
+    else
+    out<=1'b0;
+    end
+    endmodule
