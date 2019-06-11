@@ -1,0 +1,25 @@
+
+
+module vga_sync(
+    input logic clk,
+    input logic reset,
+    output logic hsync,
+    output logic vsync,
+    output logic video_on,
+    output logic [9:0] pixel_x,
+    output logic [9:0] pixel_y
+    );
+    //Parametros
+    parameter HD = 10'd640;
+    parameter VD = 10'd480;
+    //Alambres de conexion
+    wire [9:0] counter_h;
+    wire [9:0] counter_v;
+    //Instanciación de modulos
+    HV_Counter Contador(.clk(clk),.reset(reset),.en('b1),.Count_V(counter_v),.Count_H(counter_h));
+    vsync_generator VSYNC (.clk(clk),.count_v(counter_v),.reset(reset),.vsync(vsync));
+    hsync_generator HSYNC (.clk(clk),.count_h(counter_h),.reset(reset),.hsync(hsync));
+    assign pixel_x =counter_h;
+    assign pixel_y =counter_v;
+    assign video_on = (counter_h<HD) && (counter_v<VD);
+endmodule
