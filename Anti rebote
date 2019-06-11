@@ -1,0 +1,21 @@
+module Antirebote#(parameter Counter=24)
+(
+    input logic clk,
+    input logic btn_in,
+    output logic btn_out
+    );
+    reg btn_prev=0;
+    reg [Counter-1:0] counter=0;
+    always @(posedge clk)
+        if(clk)begin
+        if ((btn_prev ^ btn_in)==1)begin
+            counter <= 0;
+            btn_prev <= btn_in;
+            end
+         else if(counter[Counter-1] == 0)begin
+            counter <= counter + 1;
+         end
+         else
+            btn_out <= btn_prev;
+        end
+endmodule
