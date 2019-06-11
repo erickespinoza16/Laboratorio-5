@@ -1,0 +1,18 @@
+module ClockDivider2#(parameter mod)
+(
+    input clk_in,
+    input en,
+    input reset,
+    output clk_out
+    );
+        reg [mod-1:0] count=0;
+        always @(posedge clk_in or posedge reset)
+            //reg [15:0] count=0;
+            if (reset)begin
+         count <= 0;
+         end
+        else if(en==1)begin
+         count <= count+1;
+         end
+         assign clk_out=count[mod-1];
+endmodule
